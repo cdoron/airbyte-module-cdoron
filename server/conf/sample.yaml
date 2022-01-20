@@ -1,0 +1,10 @@
+data:
+  - name: "postgres-example"
+    connector: "airbyte/source-postgres"
+    connection:
+      host: "localhost"
+      port: 2000
+      database: "postgres"
+      username: "postgres"
+      password: "password"
+      ssl: false

@@ -1,0 +1,12 @@
+[scripts]
+server = "python main.py"
+addlicense = "licenseheaders -y 2020 -o \"IBM Corp\" -d . --ext .py  -t ./LICENSE_HEADER"
+
+[dev-packages]
+pytest = "*"
+licenseheaders = "*"
+pylint = "*"
+
+[packages]
+pyyaml = "==5.4.1"
+JSON-log-formatter = "==0.5.0"
