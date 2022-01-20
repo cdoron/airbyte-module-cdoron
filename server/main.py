@@ -18,5 +18,3 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     server = ABMServer(args.config, args.port, args.loglevel.upper())
-    logger.info('AFMFlightServer started')
-    server.serve()
