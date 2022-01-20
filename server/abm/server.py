@@ -5,6 +5,7 @@
 
 from .logging import init_logger, logger
 from .config import Config
+from .connectors.postgres_connector import PostgresConnector
 import http.server
 import socketserver
 from http import HTTPStatus
@@ -24,6 +25,7 @@ class ABMHttpHandler(http.server.SimpleHTTPRequestHandler):
                 self.end_headers()
                 return
 
+            connector = PostgresConnector(asset_conf, logger)
             self.send_response(HTTPStatus.OK)
             self.end_headers()
             self.wfile.write(b'Hello world ' + bytes(self.path, 'utf-8'))
