@@ -26,6 +26,7 @@ class ABMHttpHandler(http.server.SimpleHTTPRequestHandler):
                 return
 
             connector = PostgresConnector(asset_conf, logger)
+            connector.get_dataset()
             self.send_response(HTTPStatus.OK)
             self.end_headers()
             self.wfile.write(b'Hello world ' + bytes(self.path, 'utf-8'))
