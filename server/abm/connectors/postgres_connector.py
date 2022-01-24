@@ -56,4 +56,4 @@ class PostgresConnector:
                 tmp_configured_catalog.flush()
                 dataset=self.run_container('read --config ' + tmp_config.name +
                             ' --catalog ' + tmp_configured_catalog.name)
-        print(dataset)
+        return dataset

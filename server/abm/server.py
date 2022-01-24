@@ -26,11 +26,11 @@ class ABMHttpHandler(http.server.SimpleHTTPRequestHandler):
                 return
 
             connector = PostgresConnector(asset_conf, logger)
-            connector.get_dataset()
+            dataset = connector.get_dataset()
             self.send_response(HTTPStatus.OK)
             self.end_headers()
-            self.wfile.write(b'Hello world ' + bytes(self.path, 'utf-8'))
-            self.wfile.write(b'Hello world ' + bytes(self.config_path, 'utf-8'))
+            for line in dataset:
+                self.wfile.write(line + b'\n')
 
 class ABMHttpServer(socketserver.TCPServer):
     def __init__(self, server_address, RequestHandlerClass,
