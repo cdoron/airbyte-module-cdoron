@@ -16,7 +16,7 @@ HELM_VALUES ?= \
 
 TEMP := /tmp
 CHART_LOCAL_PATH ?= helm/afm 
-CHART_NAME ?= arrow-flight-module-chart
+CHART_NAME ?= airbyte-module-chart
 HELM_RELEASE ?= rel1-${DOCKER_NAME}
 HELM_TAG ?= 0.0.0
 

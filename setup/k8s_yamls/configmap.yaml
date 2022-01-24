@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: abm-cm
+  namespace: default
+data:
+  conf.yaml: |
+    data:
+      - name: "postgres-example"
+        connector: "airbyte/source-postgres"
+        connection:
+          host: "my-postgres-postgresql"
+          port: 5432
+          database: "postgres"
+          username: "postgres"
+          password: "password"
+          ssl: false
