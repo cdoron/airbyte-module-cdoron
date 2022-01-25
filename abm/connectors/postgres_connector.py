@@ -26,17 +26,24 @@ class PostgresConnector:
         return ret
 
     def run_container(self, command):
-        log = self.client.containers.run(self.config['connector'], command,
-            volumes=['/json:/json'], network_mode='host')
-        return self.filter_log(log.splitlines())
+        try:
+            log = self.client.containers.run(self.config['connector'], command,
+                volumes=['/json:/json'], network_mode='host')
+            return self.filter_log(log.splitlines())
+        except docker.errors.DockerException as e:
+            self.logger.error('Running of docker container failed',
+                              extra={'error': str(e)})
+            return None
 
     def get_dataset(self):
         with tempfile.NamedTemporaryFile(dir='/json') as tmp_config:
             tmp_config.write(json.dumps(self.config['connection']).encode('utf-8'))
             tmp_config.flush()
             airbyte_catalog = self.run_container('discover --config ' +
-                tmp_config.name)[0]
-            catalog_json = json.loads(airbyte_catalog)
+                tmp_config.name)
+            if not airbyte_catalog:
+                return None
+            catalog_json = json.loads(airbyte_catalog[0])
 
             streams = []
             for stream in catalog_json['catalog']['streams']:
