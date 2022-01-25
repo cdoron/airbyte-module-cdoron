@@ -1,0 +1,6 @@
+{{- if .Values.read -}}
+# curl usage example
+
+curl -X GET {{ .Release.Name }}.{{ .Release.Namespace }}.svc.cluster.local:80/{{ (index .Values.read 0).assetID }}
+
+{{- end -}}

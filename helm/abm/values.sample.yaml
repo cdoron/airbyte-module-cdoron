@@ -1,0 +1,15 @@
+# Try it with `helm install --generate-name --dry-run -f helm/abm/values.sample.yaml helm/abm`
+labels:
+  name: 012d42539692bba841a7
+  namespace: default
+read:
+- assetID: "postgres-example"
+  source:
+    connector: "airbyte/source-postgres"
+    connection:
+      host: "my-postgres-postgresql"
+      port: 5432
+      database: "postgres"
+      username: "postgres"
+      password: "password"
+      ssl: false

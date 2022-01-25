@@ -1,3 +1,5 @@
+include Makefile.env
+
 DOCKER_HOSTNAME ?= ghcr.io
 DOCKER_NAMESPACE ?= cdoron
 DOCKER_TAG ?= 0.0.0
