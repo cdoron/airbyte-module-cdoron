@@ -1,0 +1,24 @@
+apiVersion: katalog.fybrik.io/v1alpha1
+kind: Asset
+metadata:
+  name: postgres-asset
+spec:
+  secretRef: 
+    name: postgres-asset
+  details:
+    dataFormat: csv
+    connection:
+      name: airbyte
+      airbyte:
+        connector: "airbyte/source-postgres"
+        host: "localhost"
+        port: 2000
+        database: "postgres"
+        username: "postgres"
+        password: "password"
+        ssl: false
+  metadata:
+    name: test data
+    geography: theshire 
+    tags:
+      finance: true
