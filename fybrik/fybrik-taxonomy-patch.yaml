@@ -120,5 +120,5 @@ definitions:
         required: [protocol, dataformat]
       - properties:
           protocol:
-            enum: [fybrik-arrow-flight, fybrik-airbyte, db2]
+            enum: [fybrik-arrow-flight, fybrik-airbyte, db2, airbyte]
         required: [protocol]
