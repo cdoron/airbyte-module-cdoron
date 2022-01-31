@@ -10,11 +10,13 @@ class PostgresConnector:
     def __init__(self, config, logger):
         if 'connection' not in config:
             raise ValueError("'connection' field missing from configuration")
-        if 'connector' not in config:
+        if 'connector' not in config['connection']:
             raise ValueError("'connector' field missing from configuration")
 
         self.client = docker.from_env()
         self.config = config
+        self.connector = config['connection']['connector']
+        del self.config['connection']['connector']
         self.logger = logger
 
     def filter_log(self, lines):
@@ -27,7 +29,7 @@ class PostgresConnector:
 
     def run_container(self, command):
         try:
-            log = self.client.containers.run(self.config['connector'], command,
+            log = self.client.containers.run(self.connector, command,
                 volumes=['/json:/json'], network_mode='host')
             return self.filter_log(log.splitlines())
         except docker.errors.DockerException as e:

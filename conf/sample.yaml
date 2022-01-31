@@ -1,7 +1,7 @@
 data:
   - name: "example/postgres-example"
-    connector: "airbyte/source-postgres"
     connection:
+      connector: "airbyte/source-postgres"
       host: "localhost"
       port: 2000
       database: "postgres"
