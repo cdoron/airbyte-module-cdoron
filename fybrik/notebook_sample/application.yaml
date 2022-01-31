@@ -15,4 +15,4 @@ spec:
     - dataSetID: "fybrik-notebook-sample/postgres-asset"
       requirements:
         interface: 
-          protocol: airbyte
+          protocol: fybrik-airbyte

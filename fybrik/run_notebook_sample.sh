@@ -44,4 +44,9 @@ kubectl config set-context --current --namespace=fybrik-notebook-sample
 
 kubectl apply -f $AIRBYTE_FYBRIK/notebook_sample/secret.yaml
 kubectl apply -f $AIRBYTE_FYBRIK/notebook_sample/asset.yaml
+
+kubectl -n fybrik-system create configmap sample-policy --from-file=$AIRBYTE_FYBRIK/notebook_sample/sample-policy.rego
+kubectl -n fybrik-system label configmap sample-policy openpolicyagent.org/policy=rego
+while [[ $(kubectl get cm sample-policy -n fybrik-system -o 'jsonpath={.metadata.annotations.openpolicyagent\.org/policy-status}') != '{"status":"ok"}' ]]; do echo "waiting for policy to be applied" && sleep 5; done
+
 kubectl apply -f $AIRBYTE_FYBRIK/notebook_sample/application.yaml
