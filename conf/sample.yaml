@@ -1,20 +1,22 @@
 data:
   - name: "example/postgres-example"
     connection:
-      connector: "airbyte/source-postgres"
-      host: "localhost"
-      port: 2000
-      database: "postgres"
-      username: "postgres"
-      password: "password"
-      ssl: false
+      airbyte:
+        connector: "airbyte/source-postgres"
+        host: "localhost"
+        port: 2000
+        database: "postgres"
+        username: "postgres"
+        password: "password"
+        ssl: false
   - name: "mysql-example"
-    connector: "airbyte/source-mysql"
     connection:
-      host: "localhost"
-      port: 3306
-      database: "my_database"
-      username: "root"
-      password: "password"
-      replication_method: "STANDARD"
-      ssl: false
+      airbyte:
+        connector: "airbyte/source-mysql"
+        host: "localhost"
+        port: 3306
+        database: "my_database"
+        username: "root"
+        password: "password"
+        replication_method: "STANDARD"
+        ssl: false
