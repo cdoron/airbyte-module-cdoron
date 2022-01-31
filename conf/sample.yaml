@@ -1,5 +1,5 @@
 data:
-  - name: "postgres-example"
+  - name: "example/postgres-example"
     connector: "airbyte/source-postgres"
     connection:
       host: "localhost"
