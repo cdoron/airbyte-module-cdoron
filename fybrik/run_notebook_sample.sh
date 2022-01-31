@@ -38,3 +38,10 @@ go run main.go taxonomy compile --out custom-taxonomy.json --base charts/fybrik/
 helm install fybrik charts/fybrik --set global.tag=master --set global.imagePullPolicy=Always -n fybrik-system --wait --set-file taxonomyOverride=custom-taxonomy.json
 
 kubectl apply -f $AIRBYTE_FYBRIK/../module.yaml -n fybrik-system
+
+kubectl create namespace fybrik-notebook-sample
+kubectl config set-context --current --namespace=fybrik-notebook-sample
+
+kubectl apply -f $AIRBYTE_FYBRIK/notebook_sample/secret.yaml
+kubectl apply -f $AIRBYTE_FYBRIK/notebook_sample/asset.yaml
+kubectl apply -f $AIRBYTE_FYBRIK/notebook_sample/application.yaml

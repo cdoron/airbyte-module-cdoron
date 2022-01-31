@@ -6,13 +6,13 @@ spec:
   secretRef: 
     name: postgres-asset
   details:
-    dataFormat: csv
+    dataFormat: json
     connection:
       name: airbyte
       airbyte:
         connector: "airbyte/source-postgres"
         host: "localhost"
-        port: 2000
+        port: "2000"
         database: "postgres"
         username: "postgres"
         password: "password"
