@@ -2,12 +2,12 @@ data:
   - name: "example/postgres-example"
     connection:
       airbyte:
-        connector: "airbyte/source-postgres"
-        host: "localhost"
-        port: 2000
-        database: "postgres"
-        username: "postgres"
-        password: "password"
+        connector: airbyte/source-postgres
+        host: localhost
+        port: "2000"
+        database: postgres
+        username: postgres
+        password: password
         ssl: false
   - name: "mysql-example"
     connection:

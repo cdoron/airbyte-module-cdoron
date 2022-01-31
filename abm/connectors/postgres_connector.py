@@ -21,6 +21,8 @@ class PostgresConnector:
         self.connector = self.config['connector']
         del self.config['connector']
         self.logger = logger
+        if 'port' in self.config and type(self.config['port']) == str:
+            self.config['port'] = int(self.config['port'])
 
     def filter_log(self, lines):
         ret = []
