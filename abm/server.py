@@ -20,12 +20,13 @@ class ABMHttpHandler(http.server.SimpleHTTPRequestHandler):
             asset_name = self.path.lstrip('/')
             try:
                 asset_conf = config.for_asset(asset_name)
+                connector = PostgresConnector(asset_conf, logger)
             except ValueError:
+                logger.error('asset not found or malformed configuration')
                 self.send_response(HTTPStatus.NOT_FOUND)
                 self.end_headers()
                 return
 
-            connector = PostgresConnector(asset_conf, logger)
             dataset = connector.get_dataset()
             if dataset:
                 self.send_response(HTTPStatus.OK)

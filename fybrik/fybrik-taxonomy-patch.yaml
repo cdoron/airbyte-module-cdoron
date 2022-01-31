@@ -1,0 +1,124 @@
+definitions:
+  Connection:
+    description: Connection information
+    oneOf:
+      - $ref: "#/definitions/s3"
+      - $ref: "#/definitions/db2"
+      - $ref: "#/definitions/kafka"
+      - $ref: "#/definitions/fybrik-arrow-flight"
+      - $ref: "#/definitions/fybrik-airbyte"
+      - $ref: "#/definitions/airbyte"
+  s3:
+    description: Connection information for S3 compatible object store
+    type: object
+    properties:
+      bucket:
+        type: string
+      endpoint:
+        type: string
+      object_key:
+        type: string
+      region:
+        type: string
+    required:
+    - bucket
+    - endpoint
+    - object_key
+  db2:
+    type: object
+    properties:
+      database:
+        type: string
+      port:
+        type: string
+      ssl:
+        type: string
+      table:
+        type: string
+      url:
+        type: string
+  kafka:
+    type: object
+    properties:
+      bootstrap_servers:
+        type: string
+      key_deserializer:
+        type: string
+      sasl_mechanism:
+        type: string
+      schema_registry:
+        type: string
+      security_protocol:
+        type: string
+      ssl_truststore:
+        type: string
+      ssl_truststore_password:
+        type: string
+      topic_name:
+        type: string
+      value_deserializer:
+        type: string
+  fybrik-arrow-flight:
+    type: object
+    properties:
+      hostname:
+        type: string
+      port:
+        type: string
+      scheme:
+        type: string
+    required:
+    - hostname
+    - port
+    - scheme
+  fybrik-airbyte:
+    type: object
+    properties:
+      hostname:
+        type: string
+      port:
+        type: string
+      scheme:
+        type: string
+    required:
+    - hostname
+    - port
+  airbyte:
+    type: object
+    properties:
+      connector:
+        type: string
+      host:
+        type: string
+      port:
+        type: string
+      database:
+        type: string
+      username:
+        type: string
+      password:
+        type: string
+      ssl:
+        type: boolean
+      replication_method:
+        type: string
+    required:
+    - connector
+  Interface:
+    oneOf:
+      - properties:
+          protocol:
+            enum: [kafka]
+          dataformat:
+            enum: [json, avro]
+        required: [protocol, dataformat]
+      - properties:
+          protocol:
+            enum: [s3]
+          dataformat:
+            enum: [csv, parquet]
+        required: [protocol, dataformat]
+      - properties:
+          protocol:
+            enum: [fybrik-arrow-flight, fybrik-airbyte, db2, airbyte]
+        required: [protocol]

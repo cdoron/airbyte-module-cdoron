@@ -10,12 +10,19 @@ class PostgresConnector:
     def __init__(self, config, logger):
         if 'connection' not in config:
             raise ValueError("'connection' field missing from configuration")
-        if 'connector' not in config:
+        if 'airbyte' not in config['connection']:
+            raise ValueError("'airbyte' field missing from configuration")
+
+        self.config = config['connection']['airbyte']
+        if 'connector' not in self.config:
             raise ValueError("'connector' field missing from configuration")
 
         self.client = docker.from_env()
-        self.config = config
+        self.connector = self.config['connector']
+        del self.config['connector']
         self.logger = logger
+        if 'port' in self.config and type(self.config['port']) == str:
+            self.config['port'] = int(self.config['port'])
 
     def filter_log(self, lines):
         ret = []
@@ -27,7 +34,7 @@ class PostgresConnector:
 
     def run_container(self, command):
         try:
-            log = self.client.containers.run(self.config['connector'], command,
+            log = self.client.containers.run(self.connector, command,
                 volumes=['/json:/json'], network_mode='host')
             return self.filter_log(log.splitlines())
         except docker.errors.DockerException as e:
@@ -36,7 +43,7 @@ class PostgresConnector:
             return None
 
     def get_catalog(self, conf_file):
-        conf_file.write(json.dumps(self.config['connection']).encode('utf-8'))
+        conf_file.write(json.dumps(self.config).encode('utf-8'))
         conf_file.flush()
         return self.run_container('discover --config ' + conf_file.name)
 
