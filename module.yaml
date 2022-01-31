@@ -10,7 +10,7 @@ spec:
   chart:
     name: ghcr.io/cdoron/airbyte-module-chart:0.0.0
     values:
-      image.tag: master
+      image.tag: 0.0.0
   capabilities:
     - capability: read
       scope: workload
