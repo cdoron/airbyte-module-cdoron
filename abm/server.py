@@ -5,7 +5,7 @@
 
 from .logging import init_logger, logger
 from .config import Config
-from .connectors.postgres_connector import PostgresConnector
+from .connector import GenericConnector
 import http.server
 import socketserver
 from http import HTTPStatus
@@ -20,7 +20,7 @@ class ABMHttpHandler(http.server.SimpleHTTPRequestHandler):
             asset_name = self.path.lstrip('/')
             try:
                 asset_conf = config.for_asset(asset_name)
-                connector = PostgresConnector(asset_conf, logger)
+                connector = GenericConnector(asset_conf, logger)
             except ValueError:
                 logger.error('asset not found or malformed configuration')
                 self.send_response(HTTPStatus.NOT_FOUND)

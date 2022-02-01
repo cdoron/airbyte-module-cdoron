@@ -6,7 +6,7 @@ import docker
 import json
 import tempfile
 
-class PostgresConnector:
+class GenericConnector:
     def __init__(self, config, logger):
         if 'connection' not in config:
             raise ValueError("'connection' field missing from configuration")
