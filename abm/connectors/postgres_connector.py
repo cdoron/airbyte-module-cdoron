@@ -24,19 +24,22 @@ class PostgresConnector:
         if 'port' in self.config and type(self.config['port']) == str:
             self.config['port'] = int(self.config['port'])
 
-    def filter_log(self, lines):
+    def filter_reply(self, lines):
         ret = []
         for line in lines:
-            if str(line).find('\\x1b[32mINFO\\x1b[m') == -1 and \
-                str(line).find('\\x1b[33mWARN\\x1b[m') == -1:
-                ret.append(line)
+            try:
+               line_dict = json.loads(line)
+               if 'type' in line_dict and line_dict['type'] in ['CATALOG', 'RECORD']:
+                   ret.append(line)
+            finally:
+               continue
         return ret
 
     def run_container(self, command):
         try:
-            log = self.client.containers.run(self.connector, command,
+            reply = self.client.containers.run(self.connector, command,
                 volumes=['/json:/json'], network_mode='host')
-            return self.filter_log(log.splitlines())
+            return self.filter_reply(reply.splitlines())
         except docker.errors.DockerException as e:
             self.logger.error('Running of docker container failed',
                               extra={'error': str(e)})
@@ -52,10 +55,12 @@ class PostgresConnector:
         for stream in catalog_dict['catalog']['streams']:
             stream_dict = {}
             stream_dict['sync_mode'] = 'full_refresh'
+            stream_dict['destination_sync_mode'] = 'overwrite'
             stream_dict['stream'] = {}
             stream_dict['stream']['source_defined_cursor'] = False
             stream_dict['stream']['name'] = stream['name']
-            stream_dict['stream']['namespace'] = stream['namespace']
+            if 'namespace' in stream:
+                stream_dict['stream']['namespace'] = stream['namespace']
             stream_dict['stream']['supported_sync_modes'] = \
                 stream['supported_sync_modes']
             stream_dict['stream']['json_schema'] = stream['json_schema']
@@ -73,13 +78,13 @@ class PostgresConnector:
                 return None
 
             if len(airbyte_catalog) != 1:
-                logger.error('Received more than a single response line from connector.')
+                self.logger.error('Received more than a single response line from connector.')
                 return None
 
             try:
                 catalog_dict = json.loads(airbyte_catalog[0])
             except ValueError as err:
-                logger.error('Failed to parse AirByte Catalog JSON',
+                self.logger.error('Failed to parse AirByte Catalog JSON',
                              extra={'error': str(err)})
                 return None
 
