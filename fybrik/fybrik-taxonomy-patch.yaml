@@ -88,20 +88,6 @@ definitions:
     properties:
       connector:
         type: string
-      host:
-        type: string
-      port:
-        type: string
-      database:
-        type: string
-      username:
-        type: string
-      password:
-        type: string
-      ssl:
-        type: boolean
-      replication_method:
-        type: string
     required:
     - connector
   Interface:
