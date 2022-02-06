@@ -23,8 +23,14 @@ spec:
             scheme: grpc
       supportedInterfaces:
         - source:
-            protocol: airbyte
+            protocol: airbyte-postgres
             dataformat: json
-      actions:
-        - name: RedactAction
-        - name: RemoveAction
+        - source:
+            protocol: airbyte-mysql
+            dataformat: json
+        - source:
+            protocol: airbyte-google-sheets
+            dataformat: json
+        - source:
+            protocol: airbyte-us-census
+            dataformat: json

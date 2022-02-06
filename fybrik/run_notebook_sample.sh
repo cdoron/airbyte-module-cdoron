@@ -14,7 +14,7 @@ helm repo add bitnami https://charts.bitnami.com/bitnami
 helm install my-postgres bitnami/postgresql --wait
 
 # create table and fill it with a few values
-export POSTGRES_PASSWORD=$(kubectl get secret --namespace default my-postgres-postgresql -o jsonpath="{.data.postgresql-password}" | base64 --decode)
+export POSTGRES_PASSWORD=$(kubectl get secret --namespace default my-postgres-postgresql -o jsonpath="{.data.postgres-password}" | base64 --decode)
 
 kubectl run my-postgres-postgresql-client --rm --tty -i --restart='Never' --namespace default --image docker.io/bitnami/postgresql:11.14.0-debian-10-r28 --env="PGPASSWORD=$POSTGRES_PASSWORD" --command -- psql --host my-postgres-postgresql -U postgres -d postgres -p 5432 -c "CREATE TABLE users(id SERIAL PRIMARY KEY, col1 VARCHAR(200));"
 kubectl run my-postgres-postgresql-client --rm --tty -i --restart='Never' --namespace default --image docker.io/bitnami/postgresql:11.14.0-debian-10-r28 --env="PGPASSWORD=$POSTGRES_PASSWORD" --command -- psql --host my-postgres-postgresql -U postgres -d postgres -p 5432 -c "INSERT INTO public.users(col1) VALUES('record1');"
@@ -50,6 +50,7 @@ go run main.go taxonomy compile --out custom-taxonomy.json --base charts/fybrik/
 
 # helm install fybrik
 helm install fybrik charts/fybrik --set global.tag=master --set global.imagePullPolicy=Always -n fybrik-system --wait --set-file taxonomyOverride=custom-taxonomy.json
+sleep 10
 
 # define airbyte FybrikModule
 kubectl apply -f $AIRBYTE_FYBRIK/../module.yaml -n fybrik-system
