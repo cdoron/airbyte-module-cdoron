@@ -1,4 +1,4 @@
-export POSTGRES_PASSWORD=$(kubectl get secret --namespace default my-postgres-postgresql -o jsonpath="{.data.postgresql-password}" | base64 --decode)
+export POSTGRES_PASSWORD=$(kubectl get secret --namespace default my-postgres-postgresql -o jsonpath="{.data.postgres-password}" | base64 --decode)
 
 cat << EOF | kubectl apply -f -
 apiVersion: katalog.fybrik.io/v1alpha1
@@ -11,8 +11,8 @@ spec:
   details:
     dataFormat: json
     connection:
-      name: airbyte
-      airbyte:
+      name: airbyte-postgres
+      airbyte-postgres:
         connector: "airbyte/source-postgres"
         host: "my-postgres-postgresql.default"
         port: "5432"
