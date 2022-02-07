@@ -12,7 +12,7 @@ spec:
     dataFormat: json
     connection:
       name: airbyte-postgres
-      airbyte:
+      airbyte-postgres:
         connector: "airbyte/source-postgres"
         host: "my-postgres-postgresql.default"
         port: "5432"

@@ -10,10 +10,16 @@ class GenericConnector:
     def __init__(self, config, logger):
         if 'connection' not in config:
             raise ValueError("'connection' field missing from configuration")
-        if 'airbyte' not in config['connection']:
-            raise ValueError("'airbyte' field missing from configuration")
+        airbyte_conf_key = None
+        for key in config['connection']:
+            if key.startswith('airbyte-'):
+               airbyte_conf_key = key
+               break
 
-        self.config = config['connection']['airbyte']
+        if not airbyte_conf_key:
+            raise ValueError("airbyte connector configuration missing")
+
+        self.config = config['connection'][airbyte_conf_key]
         if 'connector' not in self.config:
             raise ValueError("'connector' field missing from configuration")
 
