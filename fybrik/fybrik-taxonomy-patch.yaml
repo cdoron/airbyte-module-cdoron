@@ -7,10 +7,10 @@ definitions:
       - $ref: "#/definitions/kafka"
       - $ref: "#/definitions/fybrik-arrow-flight"
       - $ref: "#/definitions/fybrik-airbyte"
-      - $ref: "#/definitions/airbyte-postgres"
-      - $ref: "#/definitions/airbyte-mysql"
-      - $ref: "#/definitions/airbyte-google-sheets"
-      - $ref: "#/definitions/airbyte-us-census"
+      - $ref: "#/definitions/postgres"
+      - $ref: "#/definitions/mysql"
+      - $ref: "#/definitions/google-sheets"
+      - $ref: "#/definitions/us-census"
   s3:
     description: Connection information for S3 compatible object store
     type: object
@@ -86,28 +86,28 @@ definitions:
     required:
     - hostname
     - port
-  airbyte-postgres:
+  postgres:
     type: object
     properties:
       connector:
         type: string
     required:
     - connector
-  airbyte-mysql:
+  mysql:
     type: object
     properties:
       connector:
         type: string
     required:
     - connector
-  airbyte-google-sheets:
+  google-sheets:
     type: object
     properties:
       connector:
         type: string
     required:
     - connector
-  airbyte-us-census:
+  us-census:
     type: object
     properties:
       connector:
@@ -134,5 +134,5 @@ definitions:
         required: [protocol]
       - properties:
           protocol:
-            enum: [airbyte-postgres, airbyte-mysql, airbyte-google-sheets, airbyte-us-census]
+            enum: [postgres, mysql, google-sheets, us-census]
         required: [protocol]

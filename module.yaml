@@ -23,14 +23,14 @@ spec:
             scheme: grpc
       supportedInterfaces:
         - source:
-            protocol: airbyte-postgres
+            protocol: postgres
             dataformat: json
         - source:
-            protocol: airbyte-mysql
+            protocol: mysql
             dataformat: json
         - source:
-            protocol: airbyte-google-sheets
+            protocol: google-sheets
             dataformat: json
         - source:
-            protocol: airbyte-us-census
+            protocol: us-census
             dataformat: json
