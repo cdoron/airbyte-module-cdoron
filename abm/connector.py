@@ -5,6 +5,7 @@
 import docker
 import json
 import tempfile
+import pyarrow as pa
 
 class GenericConnector:
     def __init__(self, config, logger):
@@ -62,6 +63,18 @@ class GenericConnector:
         conf_file.write(json.dumps(self.config).encode('utf-8'))
         conf_file.flush()
         return self.run_container('discover --config ' + conf_file.name)
+
+    translate = {
+        'number': 'INT64',
+        'string': 'STRING',
+    }
+
+    def get_schema(self, catalog_dict):
+        schema = pa.schema({})
+        properties = catalog_dict['catalog']['streams'][0]['json_schema']['properties']
+        for field in properties:
+            schema = schema.append(pa.field(field, self.translate[properties[field]['type'][0]]))
+        return schema
 
     def read_stream(self, catalog_dict, conf_file, catalog_file):
         streams = []
