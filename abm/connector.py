@@ -31,13 +31,19 @@ class GenericConnector:
         if 'port' in self.config and type(self.config['port']) == str:
             self.config['port'] = int(self.config['port'])
 
+    def extract_data(self, line_dict):
+        return json.dumps(line_dict['record']['data']).encode('utf-8')
+
     def filter_reply(self, lines):
         ret = []
         for line in lines:
             try:
                line_dict = json.loads(line)
-               if 'type' in line_dict and line_dict['type'] in ['CATALOG', 'RECORD']:
-                   ret.append(line)
+               if 'type' in line_dict:
+                   if line_dict['type'] == 'CATALOG':
+                       ret.append(line)
+                   elif line_dict['type'] == 'RECORD':
+                       ret.append(self.extract_data(line_dict))
             finally:
                continue
         return ret
