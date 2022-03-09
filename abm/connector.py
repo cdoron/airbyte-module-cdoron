@@ -8,7 +8,7 @@ import tempfile
 
 class GenericConnector:
     def __init__(self, config, logger):
-        supported_connectors = ['postgres', 'mysql', 'google-sheets', 'us-census']
+        supported_connectors = ['postgres', 'mysql', 'google-sheets', 'us-census', 'file']
         if 'connection' not in config:
             raise ValueError("'connection' field missing from configuration")
         airbyte_conf_key = None

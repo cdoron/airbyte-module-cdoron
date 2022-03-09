@@ -1,4 +1,13 @@
 data:
+  - name: "authors"
+    connection:
+      file:
+        connector: airbyte/source-file
+        dataset_name: authors
+        format: csv
+        url: "/json/authors.csv"
+        provider:
+          storage: local
   - name: "example/postgres-example"
     connection:
       postgres:
