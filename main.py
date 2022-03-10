@@ -5,6 +5,10 @@
 import argparse
 from abm.server import ABMServer, ABMFlightServer
 from abm.logging import logger
+import threading
+
+def init_ABMServer(args):
+    ABMServer(args.config, args.port, args.loglevel.upper())
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='ABM Server')
@@ -19,8 +23,11 @@ if __name__ == '__main__':
         choices=['info', 'debug', 'warning', 'error', 'critical'])
     args = parser.parse_args()
 
+    t = threading.Thread(target=init_ABMServer, args=(args,))
+    t.start()
+
     server = ABMFlightServer(args.config, args.arrowport)
     logger.info('AFMFlightServer started')
     server.serve()
 
-    ABMServer(args.config, args.port, args.loglevel.upper())
+    t.join()
