@@ -84,7 +84,12 @@ class GenericConnector:
         schema = pa.schema({})
         properties = self.catalog_dict['catalog']['streams'][0]['json_schema']['properties']
         for field in properties:
-            schema = schema.append(pa.field(field, self.translate[properties[field]['type'][0]]))
+            type_field = properties[field]['type']
+            if type(type_field) is list:
+                t = type_field[0]
+            else:
+                t = type_field
+            schema = schema.append(pa.field(field, self.translate[t]))
         return schema
 
     def read_stream(self, catalog_file):
