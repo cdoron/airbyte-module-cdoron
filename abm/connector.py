@@ -6,6 +6,7 @@ import docker
 import json
 import tempfile
 import pyarrow as pa
+from pyarrow import json as pa_json
 
 class GenericConnector:
     def __init__(self, config, logger):
@@ -32,6 +33,14 @@ class GenericConnector:
         if 'port' in self.config and type(self.config['port']) == str:
             self.config['port'] = int(self.config['port'])
 
+        self.catalog_dict = None
+        self.conf_file = tempfile.NamedTemporaryFile(dir='/json')
+        self.conf_file.write(json.dumps(self.config).encode('utf-8'))
+        self.conf_file.flush()
+
+    def __del__(self):
+        self.conf_file.close()
+
     def extract_data(self, line_dict):
         return json.dumps(line_dict['record']['data']).encode('utf-8')
 
@@ -52,17 +61,15 @@ class GenericConnector:
     def run_container(self, command):
         try:
             reply = self.client.containers.run(self.connector, command,
-                volumes=['/json:/json'], network_mode='host')
+                volumes=['/json:/json'], network_mode='host', remove=True)
             return self.filter_reply(reply.splitlines())
         except docker.errors.DockerException as e:
             self.logger.error('Running of docker container failed',
                               extra={'error': str(e)})
             return None
 
-    def get_catalog(self, conf_file):
-        conf_file.write(json.dumps(self.config).encode('utf-8'))
-        conf_file.flush()
-        return self.run_container('discover --config ' + conf_file.name)
+    def get_catalog(self):
+        return self.run_container('discover --config ' + self.conf_file.name)
 
     translate = {
         'number': 'INT64',
@@ -70,20 +77,19 @@ class GenericConnector:
     }
 
     def get_schema(self):
-        with tempfile.NamedTemporaryFile(dir='/json') as tmp_config:
-            catalog_dict = self.get_catalog_dict(tmp_config)
-            if catalog_dict == None:
-                return None
+        self.get_catalog_dict()
+        if self.catalog_dict == None:
+            return None
 
-            schema = pa.schema({})
-            properties = catalog_dict['catalog']['streams'][0]['json_schema']['properties']
-            for field in properties:
-                schema = schema.append(pa.field(field, self.translate[properties[field]['type'][0]]))
-            return schema
+        schema = pa.schema({})
+        properties = self.catalog_dict['catalog']['streams'][0]['json_schema']['properties']
+        for field in properties:
+            schema = schema.append(pa.field(field, self.translate[properties[field]['type'][0]]))
+        return schema
 
-    def read_stream(self, catalog_dict, conf_file, catalog_file):
+    def read_stream(self, catalog_file):
         streams = []
-        for stream in catalog_dict['catalog']['streams']:
+        for stream in self.catalog_dict['catalog']['streams']:
             stream_dict = {}
             stream_dict['sync_mode'] = 'full_refresh'
             stream_dict['destination_sync_mode'] = 'overwrite'
@@ -99,33 +105,42 @@ class GenericConnector:
 
         catalog_file.write(json.dumps({'streams': streams}).encode('utf-8'))
         catalog_file.flush()
-        return self.run_container('read --config ' + conf_file.name +
+        return self.run_container('read --config ' + self.conf_file.name +
                             ' --catalog ' + catalog_file.name)
 
-    def get_catalog_dict(self, tmp_config):
-        airbyte_catalog = self.get_catalog(tmp_config)
+    def get_catalog_dict(self):
+        if self.catalog_dict:
+            return
+
+        airbyte_catalog = self.get_catalog()
 
         if not airbyte_catalog:
-            return None
+            return
 
         if len(airbyte_catalog) != 1:
             self.logger.error('Received more than a single response line from connector.')
-            return None
+            return
 
         try:
-            catalog_dict = json.loads(airbyte_catalog[0])
+            self.catalog_dict = json.loads(airbyte_catalog[0])
         except ValueError as err:
             self.logger.error('Failed to parse AirByte Catalog JSON',
                               extra={'error': str(err)})
-            return None
-
-        return catalog_dict
 
     def get_dataset(self):
-        with tempfile.NamedTemporaryFile(dir='/json') as tmp_config:
-            catalog_dict = self.get_catalog_dict(tmp_config)
-            if catalog_dict == None:
-                return None
+        self.get_catalog_dict()
+        if self.catalog_dict == None:
+            return None
 
-            with tempfile.NamedTemporaryFile(dir='/json') as tmp_configured_catalog:
-                return self.read_stream(catalog_dict, tmp_config, tmp_configured_catalog)
+        with tempfile.NamedTemporaryFile(dir='/json') as tmp_configured_catalog:
+            return self.read_stream(tmp_configured_catalog)
+
+    def get_dataset_table(self, schema):
+        dataset = self.get_dataset()
+        with tempfile.NamedTemporaryFile(dir='/json') as dataset_file:
+            for line in dataset:
+                dataset_file.write(line)
+            dataset_file.flush()
+            table = pa_json.read_json(dataset_file.name,
+                                      parse_options=pa_json.ParseOptions(schema))
+            return table

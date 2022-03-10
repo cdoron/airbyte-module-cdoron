@@ -7,7 +7,7 @@ import pyarrow as pa
 import json
 
 request = {
-    "asset": "authors", 
+    "asset": "dataset",
 }
 
 def main(port):
@@ -16,6 +16,7 @@ def main(port):
     info = client.get_flight_info(
         fl.FlightDescriptor.for_command(json.dumps(request)))
 
+    print("Schema: " + str(info.schema))
     endpoint = info.endpoints[0]
     result: fl.FlightStreamReader = client.do_get(endpoint.ticket)
     print(result.read_all().to_pandas())

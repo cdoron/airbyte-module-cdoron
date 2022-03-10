@@ -8,6 +8,15 @@ data:
         url: "/json/authors.csv"
         provider:
           storage: local
+  - name: "dataset"
+    connection:
+      file:
+        connector: airbyte/source-file
+        dataset_name: dataset
+        format: parquet
+        url: "/json/dataset.parquet"
+        provider:
+          storage: local
   - name: "example/postgres-example"
     connection:
       postgres:

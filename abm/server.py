@@ -72,6 +72,24 @@ class ABMFlightServer(fl.FlightServerBase):
                 endpoints.append(fl.FlightEndpoint(ticket.toJSON(), []))
         return endpoints
 
+    def do_get(self, context, ticket: fl.Ticket):
+        ticket_info: ABMTicket = ABMTicket.fromJSON(ticket.ticket)
+
+        logger.info('retrieving dataset',
+            extra={'ticket': ticket.ticket,
+                   DataSetID: ticket_info.asset_name,
+                   ForUser: True})
+
+        with Config(self.config_path) as config:
+            asset_conf = config.for_asset(ticket_info.asset_name)
+
+        connector = GenericConnector(asset_conf, logger)
+        schema = connector.get_schema()
+
+        table = connector.get_dataset_table(schema)
+
+        return fl.GeneratorStream(schema, table.to_batches())
+
     def get_flight_info(self, context, descriptor):
         asset_name = json.loads(descriptor.command)['asset']
         logger.info('getting flight information',
