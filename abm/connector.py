@@ -69,12 +69,17 @@ class GenericConnector:
         'string': 'STRING',
     }
 
-    def get_schema(self, catalog_dict):
-        schema = pa.schema({})
-        properties = catalog_dict['catalog']['streams'][0]['json_schema']['properties']
-        for field in properties:
-            schema = schema.append(pa.field(field, self.translate[properties[field]['type'][0]]))
-        return schema
+    def get_schema(self):
+        with tempfile.NamedTemporaryFile(dir='/json') as tmp_config:
+            catalog_dict = self.get_catalog_dict(tmp_config)
+            if catalog_dict == None:
+                return None
+
+            schema = pa.schema({})
+            properties = catalog_dict['catalog']['streams'][0]['json_schema']['properties']
+            for field in properties:
+                schema = schema.append(pa.field(field, self.translate[properties[field]['type'][0]]))
+            return schema
 
     def read_stream(self, catalog_dict, conf_file, catalog_file):
         streams = []
@@ -97,21 +102,29 @@ class GenericConnector:
         return self.run_container('read --config ' + conf_file.name +
                             ' --catalog ' + catalog_file.name)
 
+    def get_catalog_dict(self, tmp_config):
+        airbyte_catalog = self.get_catalog(tmp_config)
+
+        if not airbyte_catalog:
+            return None
+
+        if len(airbyte_catalog) != 1:
+            self.logger.error('Received more than a single response line from connector.')
+            return None
+
+        try:
+            catalog_dict = json.loads(airbyte_catalog[0])
+        except ValueError as err:
+            self.logger.error('Failed to parse AirByte Catalog JSON',
+                              extra={'error': str(err)})
+            return None
+
+        return catalog_dict
+
     def get_dataset(self):
         with tempfile.NamedTemporaryFile(dir='/json') as tmp_config:
-            airbyte_catalog = self.get_catalog(tmp_config)
-            if not airbyte_catalog:
-                return None
-
-            if len(airbyte_catalog) != 1:
-                self.logger.error('Received more than a single response line from connector.')
-                return None
-
-            try:
-                catalog_dict = json.loads(airbyte_catalog[0])
-            except ValueError as err:
-                self.logger.error('Failed to parse AirByte Catalog JSON',
-                             extra={'error': str(err)})
+            catalog_dict = self.get_catalog_dict(tmp_config)
+            if catalog_dict == None:
                 return None
 
             with tempfile.NamedTemporaryFile(dir='/json') as tmp_configured_catalog:

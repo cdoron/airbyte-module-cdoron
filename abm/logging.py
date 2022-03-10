@@ -12,6 +12,8 @@ Message       = 'message'
 Time          = 'time'
 Caller        = 'caller'
 FuncName      = 'funcName'
+DataSetID     = 'DataSetID'
+ForUser       = 'ForUser'
 
 logger = logging.getLogger('airbyte-module')
 app_uuid = ''
