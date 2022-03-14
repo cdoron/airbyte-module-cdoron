@@ -10,10 +10,14 @@ metadata:
 spec:
   type: {{ .Values.service.type }}
   ports:
-    - port: {{ .Values.service.port }}
+    - port: 79
       targetPort: 8080
       protocol: TCP
       name: http
+    - port: {{ .Values.service.port }}
+      targetPort: 8081
+      protocol: TCP
+      name: arrow
   selector:
     app.kubernetes.io/name: {{ include "airbyte-module.name" . }}
     app.kubernetes.io/instance: {{ .Release.Name }}

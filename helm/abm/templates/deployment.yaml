@@ -35,6 +35,9 @@ spec:
             - name: http
               containerPort: 8080
               protocol: TCP
+            - name: arrow
+              containerPort: 8081
+              protocol: TCP
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
           volumeMounts:
