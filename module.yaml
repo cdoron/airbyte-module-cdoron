@@ -34,3 +34,15 @@ spec:
         - source:
             protocol: us-census
             dataformat: json
+        - source:
+            protocol: postgres
+            dataformat: csv
+        - source:
+            protocol: mysql
+            dataformat: csv
+        - source:
+            protocol: google-sheets
+            dataformat: csv
+        - source:
+            protocol: us-census
+            dataformat: csv

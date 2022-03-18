@@ -9,7 +9,7 @@ spec:
   secretRef: 
     name: postgres-asset
   details:
-    dataFormat: json
+    dataFormat: csv
     connection:
       name: postgres
       postgres:
