@@ -128,6 +128,7 @@ definitions:
       - $ref: "#/definitions/RedactAction"
       - $ref: "#/definitions/RemoveAction"
       - $ref: "#/definitions/FilterAction"
+      - $ref: "#/definitions/AgeFilterAction"
       - $ref: "#/definitions/Deny"
   RedactAction:
     type: object
@@ -156,6 +157,17 @@ definitions:
         type: array
       query:
         type: string
+  AgeFilterAction:
+    type: object
+    properties:
+      columns:
+        items:
+          type: string
+        type: array
+      age:
+        type: integer
+    required:
+      - columns
   Deny:
     type: object
     additionalProperties: false

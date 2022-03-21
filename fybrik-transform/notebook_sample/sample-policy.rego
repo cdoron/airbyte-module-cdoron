@@ -1,8 +1,9 @@
 package dataapi.authz
 
-rule[{"action": {"name":"FilterAction", "options": {"query": query}}, "policy": description}] {
-  description := "Apply Filter to datasets tagged with finance = true"
-  query := "Country == 'Israel' or Country == 'United Kingdom'"
+rule[{"action": {"name":"AgeFilterAction", "options": {"age": age}, "columns": column_names}, "policy": description}] {
+  description := "Apply AgeFilter to datasets tagged with finance = true"
+  age := 20
+  column_names := ["Date of Birth"]
   input.action.actionType == "read"
   input.resource.metadata.tags.finance
 }
