@@ -29,7 +29,7 @@ helm repo update
 
 helm install cert-manager jetstack/cert-manager \
     --namespace cert-manager \
-    --version v1.2.0 \
+    --version v1.6.2 \
     --create-namespace \
     --set installCRDs=true \
     --wait --timeout 120s
