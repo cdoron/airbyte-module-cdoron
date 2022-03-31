@@ -16,8 +16,8 @@ spec:
       scope: workload
       api:
         connection:
-          name: fybrik-airbyte
-          fybrik-airbyte:
+          name: fybrik-arrow-flight
+          fybrik-arrow-flight:
             hostname: "{{ .Release.Name }}.{{ .Release.Namespace }}"
             port: "80"
             scheme: grpc
@@ -34,3 +34,15 @@ spec:
         - source:
             protocol: us-census
             dataformat: json
+        - source:
+            protocol: postgres
+            dataformat: csv
+        - source:
+            protocol: mysql
+            dataformat: csv
+        - source:
+            protocol: google-sheets
+            dataformat: csv
+        - source:
+            protocol: us-census
+            dataformat: csv
