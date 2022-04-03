@@ -16,7 +16,7 @@ COPY abm abm
 RUN apt-get update
 RUN apt-get install -y docker.io curl
 
-EXPOSE 8080
+EXPOSE 8080 8081
 
 ENTRYPOINT ["python3"]
 CMD ["main.py"]
